@@ -1,0 +1,25 @@
+.fi-hor {
+    background: linear-gradient(to right, #2180cc, #2fe7ff);
+    padding: 40px 0 250px 0;
+    color: #fff;
+    margin-bottom: 50px;
+}
+.ro {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+.m0 {
+      margin: 0 !important;
+  }
+.text-center {
+      text-align: center;
+  }
+.vid{
+    position: absolute;
+    left: 50%;
+    z-index: 10;
+}
+.yttp{
+    height: 315px;
+    width: 560px;
+}

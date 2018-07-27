@@ -1,0 +1,303 @@
+<div class=" m0">
+  <div class="col-xs-12 text-center" [ngStyle]="{'background': 'linear-gradient(to right, #2180cc, #2fe7ff)', 'padding' : '50px 0', 'color' : '#fff', 'margin-bottom': '20px'}">
+    <p [ngStyle]="{'font-size': '24px', 'font-weight' : '600'}">Sitting down has never been healthier</p>
+    <p>A health check that takes only 20 minutes</p>
+  </div>
+  <form #bookingform="ngForm">
+  <div class="col-xs-12 text-center" style="padding: 30px 0;">
+    <!-- Choosing City -->
+      <label>Choose your city</label>
+      <div>
+        <div class="radio-inline" *ngFor="let city of this.cities">
+          <label >
+            <input type="radio" [(ngModel)]= "user_sesh.city" name="city" (change)="getVenues()" [value]='city' > {{city.city_name}}
+          </label>
+        </div>
+        </div>
+    <!-- Choosing location -->
+        <div class="col-xs-12 text-center anim" [ngStyle]="{'padding' : '30px 0'}" id="loc_sec" *ngIf="user_sesh.city">
+            <label>Pick a location</label>
+            <div>
+            <div class="radio-inline">
+              <label>
+                <input type="radio" [(ngModel)]="user_sesh.location" name="Home" [disabled]="user_sesh.venue" value="home"> Home (For Self & Family)
+              </label>
+            </div>
+            <div class="radio-inline">
+              <label>
+                <input type="radio" [(ngModel)]="user_sesh.location" name="office" [disabled]="user_sesh.test_for" (change)="this.getVenues()" value="office"> Office (For Self) {{this.user_sesh.location}}
+              </label>
+            </div>
+            </div>
+          </div>
+      <!-- Checking for family or self -->
+          <div class="col-xs-12 text-center anim" id="hm_sec" [ngStyle]="{'padding': '30px 0' , background: '#fbfbfb' }" *ngIf="user_sesh.location == 'home'" >
+            <label>Who is this health check for?</label>
+            <div>
+                <div class="radio-inline">
+                    <label>
+                      <input type="radio" [(ngModel)]="user_sesh.test_for" name="test_for" value="Myself"> Myself
+                    </label>
+                  </div>
+                  <div class="radio-inline">
+                    <label>
+                      <input type="radio" [(ngModel)]="user_sesh.test_for" name="test_for" value="Only_Family"> Family
+                    </label>
+                  </div>
+                  <div class="radio-inline">
+                      <label>
+                        <input type="radio" [(ngModel)]="user_sesh.test_for" name="test_for" value="Myself_Family">Myself +  Family
+                      </label>
+                  </div>
+            </div>
+            <!-- if the user opts for Myself-->
+            <label [ngStyle]="{'margin-top': '20px'}" *ngIf="user_sesh.test_for && user_sesh.test_for != 'Myself'" >How many family memebrs need a health check?</label>
+            <div class="fam-cnt anim" *ngIf="user_sesh.test_for && user_sesh.test_for != 'Myself'" >
+              <button class="btn-btn" class="btn btn-{{user_sesh.fam_count == '1' ? 'primary':'default'}}" (click)="user_sesh.fam_count = 1;">1</button>
+              <button class="btn-btn" class="btn btn-{{user_sesh.fam_count == '2' ? 'primary':'default'}}" (click)="user_sesh.fam_count = 2;">2</button>
+              <button class="btn-btn" class="btn btn-{{user_sesh.fam_count == '3' ? 'primary':'default'}}" (click)="user_sesh.fam_count = 3;">3</button>
+              <button class="btn-btn" class="btn btn-{{user_sesh.fam_count == '4' ? 'primary':'default'}}" (click)="user_sesh.fam_count = 4;">4</button>
+              <button class="btn-btn" class="btn btn-{{user_sesh.fam_count == '5' ? 'primary':'default'}}" (click)="user_sesh.fam_count = 5;">5+</button>
+            </div>
+          </div>
+          <!-- Choosing campus depending on the city you choose -->
+          <div class="col-xs-12 text-center anim" *ngIf="user_sesh.location == 'office'" id="camp_sec" [ngStyle]="{'padding': '30px 0', 'background' : '#fbfbfb'}" >
+          <label [ngStyle]="{'margin-top': '30px'}">Choose your campus</label>
+          <div [ngStyle]="{'width': '400px', 'margin':'0 auto'}">
+            <div class=" row m0">
+              <div class="col-xs-12">
+                <div class="radio-inline" *ngFor="let venue of this.venues" >
+                  <label>
+                    <input type="radio" [(ngModel)]="user_sesh.venue" name="venue" (click)="this.getStations('',1)" [value]="venue">{{venue.building_name}}
+                  </label>
+                </div>
+              </div>
+              <div class="col-xs-12" *ngIf="!venues || !venues.length">
+                <p>Sorry, no active stations for ths location</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Health check plans to select -->
+        <div *ngIf="user_sesh.venue || user_sesh.fam_count || user_sesh.test_for == 'Myself'" id="prod-sec" class="col-xs-12 text-center" [ngStyle]="{'padding': '30px 0'}" >
+                
+            <label>Choose your health check </label>
+         <div [ngStyle]="{'width': '800px', 'margin' : '0 auto', 'padding' : '20px 0'}" class="desk">
+           <div class="col-xs-4" *ngFor="let prod of select_products">
+              <strong *ngIf="prod.free" [ngStyle]="{'font-size': '36px'}">&#8377; <strike>{{prod.price}}</strike></strong>
+              <p [ngStyle]="{'margin': '0'}"><strong *ngIf="prod.free" [ngStyle]="{'font-size': '26px', 'color' : 'green'}" >Free</strong></p>              
+              <strong *ngIf="!prod.free" [ngStyle]="{'font-size': '36px'}" >&#8377; {{prod.price}}</strong>
+              <h4>{{prod.name}}</h4>
+            </div>
+        </div>
+        </div>
+        <div [hidden]="!(user_sesh.venue || user_sesh.fam_count || user_sesh.test_for == 'Myself')" class="col-xs-12 text-center" [ngStyle]="{'padding': '0 0 30px', 'background' : '#fbfbfb'}">
+          <div class="row desk" [ngStyle]="{'width': '800px', 'margin' : '0 auto', 'padding': '0 0 20px 0'}" id="prod-opt-count">
+              <div class="col-xs-4 text-center" *ngFor="let prod of this.select_products" [ngStyle]="{'padding' : '0 0 20px 0'}">
+                  <img src="../../assets/w_tri.png" [ngStyle]="{'width': '45px'}">
+              </div>
+              <div class="col-xs-4 text-left" *ngFor="let prod of this.select_products" [style.border-left]="$first ? ' ':'1px solid #2180cc'" [ngStyle]="{'min-height': '400px', 'padding-bottom' : '50px', 'cursor': 'pointer'}" >
+                  <p [ngStyle]="{'padding': '0 30px', 'color' : '#4a4a4a'}">{{prod.sub_name}}</p>
+                  <p *ngFor="let item of prod.list" [ngStyle]="{'padding' : '0 30px', 'font-size': '12px'}">
+                    <img *ngIf="item.icon" src="../../assets/{{item.icon}}.png" [ngStyle]="{'width' : '30px', 'margin-right' : '10px'}"> {{item.text}}
+                  </p>
+                  <p *ngIf="user_sesh.test_for == 'Myself' || user_sesh.location == 'Office'" (click)="selected_product = prod.id;" class="text-center" [ngStyle]="{'font-size': '28px', 'position': 'absolute', 'width' : '100%', 'bottom' : '0'}">
+                    <img src="../../assets/uncheck.png" [ngStyle]="{ 'width' : '40px'}" *ngIf="selected_product != prod.id">  
+                    <img src="../../assets/check.png" [ngStyle]="{'width': '40px'}" *ngIf="selected_product == prod.id">
+                  </p>
+                <p *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for == 'Myself')" class="text-center" [ngStyle]="{'font-size' : '28px','position' : 'absolute', 'width' : '100%', 'bottom' : '0'}">
+                    <span (click)="this.setProdCount(prod, '-')">-</span> <span [ngStyle] ="{'margin' : '0 5px'}">{{prod.count}}</span> <span (click)="this.setProdCount(prod, '+')">+</span>
+                </p>
+              </div>
+              <div class="col-xs-12" *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for != 'Myself')" [ngStyle]="{'padding': '20px'}">
+                <small>&#8377; 150 fee applicable per home visit</small>
+              </div>
+              <div class="col-xs-12" *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for == 'Myself')" [ngStyle]="{'padding': '15px'}">
+                  <div class="col-xs-12" style="padding: 10px;">
+                      <p>Home visits available in Bangalore, Pune, Mumbai, Hyderabad, Delhi NCR, Chennai.</p>
+                      <small><strong>Additional &#8377; 150 home visit fee will be charged.</strong></small>
+                    </div>
+                    <div class="col-xs-12">
+                        <button class="btn btn-primary" (click)="this.addFamilyProducts()">Add</button>
+                    </div>
+                </div>
+            </div>
+        <div class="row phone m0">
+          <div class="col-xs-12" *ngFor="let prod of select_products">
+              <div class="col-xs-12">
+                  <div [ngstyle]="{'background': '#fff', 'padding' : '20px 0'}">
+                      <strong [ngStyle]="{'font-size': '36px'}">&#8377; {{prod.price}}</strong>
+                      <h4>{{prod.name}}</h4>
+                  </div>
+                  <img src="../../assets/w_tri.png" [ngStyle]="{'width' : '45px'}">
+                  <p [ngStyle]="{'padding': '0 30px', 'color': '#4a4a4a'}">{{prod.sub_name}}</p>
+                  <p *ngFor="let item of prod.list" [ngStyle]="{'padding': '0 30px', 'font-size' : '12px'}">
+                      <img *ngIf="item.icon" src="../../assets/{{item.icon}}.png" [ngStyle]="{'width': '30px','margin-right': '10px'}"> {{item.text}}
+                  </p>
+                  <p *ngIf="!(user_sesh.location != 'Office' || user_sesh.test_for != 'Myself' )" (click)="selected_product = prod.id;" class="text-center" [ngStyle]="{'font-size': '28px', 'position': 'absolute', 'width' : '100%', 'bottom' : '0'}">
+                    <img src="../../assets/uncheck.png" [ngStyle]="{ 'width' : '40px'}" *ngIf="selected_product != prod.id">  
+                    <img src="../../assets/check.png" [ngStyle]="{'width': '40px'}" *ngIf="selected_product == prod.id">
+                  </p>
+                <p *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for == 'Myself')" class="text-center" [ngStyle]="{'font-size' : '28px','position' : 'absolute', 'width' : '100%', 'bottom' : '0'}">
+                    <span (click)="this.setProdCount(prod, '-')">-</span> <span [ngStyle] ="{'margin' : '0 5px'}">{{prod.count}}</span> <span (click)="this.setProdCount(prod, '+')">+</span>
+                </p>                  
+              </div>
+          </div>
+          <div class="col-xs-12" *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for != 'Myself')" [ngStyle]="{'padding': '20px'}">
+              <small>&#8377; 150 fee applicable per home visit</small>
+          </div>
+          <div class="col-xs-12" *ngIf="!(user_sesh.location != 'Home' && user_sesh.test_for != 'Myself')" [ngStyle]="{'padding' : '15px'}">
+              <div class="col-xs-12" [ngStyle]= "{'padding' : '10px'}">
+                  <p>Home visits available in Bangalore, Pune, Mumbai, Hyderabad, Delhi NCR, Chennai.</p>
+                  <small><strong>Additional &#8377; 150 home visit fee will be charged.</strong></small>
+              </div>
+              <div class="col-xs-12">
+                  <button class="btn btn-primary" (click)="addFamilyProducts()">Add</button>
+              </div>
+          </div>
+      </div>
+        </div>
+         <div *ngIf="show_dates" id="slot-sec" class="col-xs-12 text-center" [ngStyle]="{'padding': '30px 0'}">
+          <div [ngStyle]="{'width': '800px','margin': '0 auto','padding': '20px 0'}" class="desk">
+              <div class="col-xs-5">
+                  <label [ngStyle] ="{'margin-bottom' : '30px'}">Pick a date</label>
+                  <div uib-datepicker [(ngModel)]="selected_date" name="selected date" shortcut-propagation="true" (change)="this.getAvailableSlots()" class="well well-sm" datepicker-options="date_options"></div>
+              </div>
+              <div class="col-xs-2"></div>
+              <div class="col-xs-5" *ngIf="slots">
+                  <label>Pick a time</label>
+                  <div class="row m0">
+                      <div class="col-xs-3" *ngFor="let slot of slots" [ngStyle]="{'padding': '10px'}">
+                          <button *ngIf="slot.status == 'D'" class="btn">
+                              <span class="cl-rd"><strike>{{slot.slot}}</strike></span>
+                          </button>
+                          <button *ngIf="slot.status == 'B'"class="btn">
+                              <span class="cl-rd">{{slot.slot}}</span>
+                          </button>
+                          <button *ngIf="slot.status == 'A'" class="btn btn-{{selected_slot == slot.slot_id ? 'primary':''}}" (click)="this.setSlotAndProceed(slot)">
+                              {{slot.slot}}
+                          </button>
+                      </div>
+                  </div>
+                  <div class="row m0" [ngStyle]="{'padding': '10px 0'}">
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle"></span>  Available
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-bl"></span>  Selected
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-rd"></span>  Booked
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-rd"></span>  <strike class="cl-rd">Blocked</strike>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row m0 phone">
+              <div class="col-xs-12">
+                  <label [ngStyle]="{'margin-bottom': '30px'}">Pick a date</label>
+                  <div uib-datepicker [(ngModel)]="selected_date" name="selected date" (change)="bc.getAvailableSlots()" class="well well-sm" datepicker-options="bc.date_options"></div>
+              </div>
+              <div class="col-xs-12" *ngIf="slots">
+                  <label>Pick a time</label>
+                  <div class="row m0">
+                      <div class="col-xs-3" *ngFor="let slot of bc.slots" style="padding: 10px;">
+                          <button *ngIf="slot.status == 'D'" class="btn">
+                              <span class="cl-rd"><strike>{{slot.slot}}</strike></span>
+                          </button>
+                          <button *ngIf="slot.status == 'B'"class="btn">
+                              <span class="cl-rd">{{slot.slot}}</span>
+                          </button>
+                          <button *ngIf="slot.status == 'A'" class="btn btn-{{selected_slot == slot.slot_id ? 'primary':''}}" (click)="this.setSlotAndProceed(slot)">
+                              {{slot.slot}}
+                          </button>
+                      </div>
+                  </div>
+                  <div class="row m0" style="padding: 10px 0;">
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle"></span>  Available
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-bl"></span>  Selected
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-rd"></span>  Booked
+                      </div>
+                      <div class="col-xs-3">
+                          <span class="fa fa-circle cl-rd"></span>  <strike class="cl-rd">Blocked</strike>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row m0 phone">
+            <div class="col-xs-12">
+                <label [ngStyle]="{'margin-bottom' : '30px'}">Pick a date</label>
+                <div uib-datepicker [(ngModel)]="selected_date" name="selected_name" (change)="this.getAvailableSlots()" class="well well-sm" datepicker-options="date_options"></div>
+            </div>
+            <div class="col-xs-12" *ngIf="slots">
+                <label>Pick a time</label>
+                <div class="row m0">
+                    <div class="col-xs-3" *ngFor="let slot of bc.slots" style="padding: 10px;">
+                        <button *ngIf="slot.status == 'D'" class="btn">
+                            <span class="cl-rd"><strike>{{slot.slot}}</strike></span>
+                        </button>
+                        <button *ngIf="slot.status == 'B'"class="btn">
+                            <span class="cl-rd">{{slot.slot}}</span>
+                        </button>
+                        <button *ngIf="slot.status == 'A'" class="btn btn-{{selected_slot == slot.slot_id ? 'primary':''}}" (click)="this.setSlotAndProceed(slot)">
+                            {{slot.slot}}
+                        </button>
+                    </div>
+                </div>
+                <div class="row m0" [ngStyle]="{'padding' : '10px 0'}">
+                    <div class="col-xs-3">
+                        <span class="fa fa-circle"></span>  Available
+                    </div>
+                    <div class="col-xs-3">
+                        <span class="fa fa-circle cl-bl"></span>  Selected
+                    </div>
+                    <div class="col-xs-3">
+                        <span class="fa fa-circle cl-rd"></span>  Booked
+                    </div>
+                    <div class="col-xs-3">
+                        <span class="fa fa-circle cl-rd"></span>  <strike class="cl-rd">Blocked</strike>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div *ngIf="selected_slot || ((user_sesh.fam_count && user_sesh.fam_products) || (user_sesh.test_for === 'Myself' && selected_product ))" id="form-sec" class="col-xs-12 text-center" [ngStyle]="{'padding' : '30px 0','background': '#fbfbfb'}">
+        <div [ngStyle]="{'margin': '0 auto', 'padding' : '20px 0', 'width' : '400px'}">
+            <div class="col-xs-12">
+                    <label>Add Details</label>
+                    <div class="col-xs-12" [ngStyle]="{'padding': '5px'}">
+                        <input type="text" class="form-control" [(ngModel)]="user_sesh.user.first_name" name="first_name" placeholder="First Name" ng-required="true">
+                    </div>
+                    <div class="col-xs-12" [ngStyle] ="{'padding' : '5px'}">
+                        <input type="text" class="form-control" [(ngModel)]="user_sesh.user.last_name" name="last_name" placeholder="Last Name" ng-required="true">
+                    </div>
+                    <div class="col-xs-12" [ngStyle]="{'padding': '5px'}">
+                        <input type="number" class="form-control" [(ngModel)]="user_sesh.user.phone" name="phone" placeholder="Phone No." ng-required="true">
+                    </div>
+                    <div class="col-xs-12" [ngStyle]="{'padding': '5px'}">
+                        <input type="email" class="form-control" [(ngModel)]="user_sesh.user.email" name="email" placeholder="Email Id" ng-required="true">
+                    </div>
+                    <div class="col-xs-12" *ngIf="user_sesh.location == 'Office' && !offer_eligible" [ngStyle]="{'padding' : '20px 0'}">
+                        <button class="btn btn-primary" [disabled]="details_form.$invalid" (click)="this.setFinal(1)">Pay Now</button>
+                        <button class="btn btn-primary" [disabled]="details_form.$invalid" (click)="this.setFinal(2)">Pay Later</button>
+                    </div>
+                    <div class="col-xs-12" *ngIf="user_sesh.location == 'Office' && offer_eligible" [ngStyle]="{'padding' : '20px 0'}">
+                        <button class="btn btn-primary" [disabled]="details_form.$invalid" (click)="this.setFinal(2)">Book Free HC!</button>
+                    </div>
+                    <div class="col-xs-12" *ngIf="user_sesh.location != 'Office'" [ngStyle] ="{'padding' : '20px 0'}">
+                        <button class="btn btn-primary" [disabled]="details_form.$invalid" (click)="this.setFinalForHome()">Submit</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</form>
+</div>
